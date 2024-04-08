@@ -35,68 +35,6 @@ bool Graph::SetChip(int pos, bool chip)
 	return true;
 }
 
-//std::vector<int> Graph::get_path_bfs(int s, int t)
-//{
-//	std::vector<int> dist(_n_vertex, _n_vertex);
-//	std::vector<int> p(_n_vertex, -1);
-//	std::queue<int> q;
-//	dist[s] = 0;
-//	q.push(s);
-//
-//	while (!q.empty())
-//	{
-//		int v = q.front();
-//		q.pop();
-//		for (int u : _adj_vertex[v])
-//		{
-//			if (dist[u] > dist[v] + 1)
-//			{
-//				p[u] = v;
-//				dist[u] = dist[v] + 1;
-//				q.push(u);
-//			}
-//		}
-//	}
-//
-//	if (dist[t] == _n_vertex)
-//		return {};
-//
-//	std::vector<int> path;
-//	while (t != -1)
-//	{
-//		path.push_back(t);
-//		t = p[t];
-//	}
-//
-//	reverse(path.begin(), path.end());
-//	return path;
-//}
-//
-//std::vector<int> Graph::get_dest_bfs(int s)
-//{
-//	std::vector<int> dist(_n_vertex, _n_vertex);
-//	std::queue<int> q;
-//	dist[s] = 0;
-//	q.push(s);
-//
-//	while (!q.empty())
-//	{
-//		int v = q.front();
-//		q.pop();
-//		for (int u : _adj_vertex[v])
-//		{
-//			if (dist[u] > dist[v] + 1)
-//			{
-//				dist[u] = dist[v] + 1;
-//				q.push(u);
-//			}
-//		}
-//	}
-//
-//	return dist;
-//}
-//
-
 std::vector<int> Graph::GetPath(int start, int to)
 {
 	std::vector<int> dist(m_countVertex, m_countVertex);

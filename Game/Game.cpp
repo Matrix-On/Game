@@ -258,7 +258,6 @@ void Game::ProccessGame(float clockTime, sf::Vector2f& pos)
 
 bool Game::LoadBackground(const sf::Vector2f& winSize)
 {
-
 	sf::Sprite background;
 	background.setTexture(textures.m_Background);
 	background.setPosition(0, 0);
@@ -349,7 +348,7 @@ bool Game::LoadVertex(configureGame& gameConf, float& mult)
 		m_vertexes.push_back({ { pos.x, pos.y }, mult , spriteShipBackground });
 
 	for (auto& pos : gameConf.m_winPositionChips)
-		m_vertexes[pos].SetColor(g_colors[pos]);
+		m_vertexes[pos].SetColor(g_colors[pos - 1]);
 
 	return true;
 }
@@ -497,15 +496,15 @@ float Game::SetScale(configureGame& config, const sf::Vector2u& window_size)
 int Game::OnChipClicked(const sf::Vector2f& pos)
 {
 	int index = -1;
-	for (size_t i = 0; i < m_chips.size(); i++)
+	for (size_t i = 0; i < m_chips.size(); ++i)
 	{
-		if (m_chips[i].OnSelected(pos))
-		{
-			index = (int)i;
-			auto dest = m_gameGraph.GetDest(m_chips[index].GetVertex());
-			for (size_t j = 0; j < dest.size(); j++)
-				m_vertexes[dest[j]].SetFlash(true);
-		}
+		if (!m_chips[i].OnSelected(pos))
+			continue;
+	
+		index = (int)i;
+		auto dest = m_gameGraph.GetDest(m_chips[index].GetVertex());
+		for (size_t j = 0; j < dest.size(); ++j)
+			m_vertexes[dest[j]].SetFlash(true);
 	}
 
 	return index;
@@ -514,26 +513,27 @@ int Game::OnChipClicked(const sf::Vector2f& pos)
 bool Game::OnVertexClicked(const sf::Vector2f& pos, int chip_index)
 {
 	bool moved = false;
-	for (size_t i = 0; i < m_vertexes.size(); i++)
+	for (size_t i = 0; i < m_vertexes.size(); ++i)
 	{
 		m_vertexes[i].SetFlash(false);
-		if (m_vertexes[i].OnSelected(pos))
-		{
-			auto v_path = m_gameGraph.GetPath(m_chips[chip_index].GetVertex(), (int)i);
-			if (v_path.empty())
-				continue;
+		if (!m_vertexes[i].OnSelected(pos))
+			continue;
 
-			std::vector<sf::Vector2f> path;
-			for (size_t j = 0; j < v_path.size(); j++)
-				path.push_back(m_vertexes[v_path[j]].GetPosition());
+		auto pathDest = m_gameGraph.GetPath(m_chips[chip_index].GetVertex(), (int)i);
+		if (pathDest.empty())
+			continue;
 
-			m_gameGraph.SetChip(m_chips[chip_index].GetVertex(), false);
-			m_gameGraph.SetChip((int)i, true);
+		std::vector<sf::Vector2f> path;
+		for (size_t j = 0; j < pathDest.size(); ++j)
+			path.push_back(m_vertexes[pathDest[j]].GetPosition());
 
-			m_chips[chip_index].MoveTo(path);
-			m_chips[chip_index].SetVertex((int)i);
-			moved = true;
-		}
+		m_gameGraph.SetChip(m_chips[chip_index].GetVertex(), false);
+		m_gameGraph.SetChip((int)i, true);
+
+		m_chips[chip_index].MoveTo(path);
+		m_chips[chip_index].SetVertex((int)i);
+		moved = true;
+
 	}
 	return moved;
 }
